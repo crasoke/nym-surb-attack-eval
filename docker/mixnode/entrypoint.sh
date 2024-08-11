@@ -1,5 +1,5 @@
 #!/bin/sh
-while ! [ -f "/bin_volume/nym-node" ] || ! [ -s "$(cat /nyx_volume/${MIX_NAME}_mnemonic)" ]; do
+while ! [ -f "/bin_volume/nym-node" ] || ! [ -s "/nyx_volume/${MIX_NAME}_mnemonic" ]; do
   sleep 1
 done
 
