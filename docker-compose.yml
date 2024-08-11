@@ -1,0 +1,203 @@
+services:
+  genesis_validator:
+    build:
+      context: docker/validator
+    image: validator:latest
+    container_name: genesis_validator
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.2
+    command: ["genesis"]
+
+  secondary_validator:
+    build:
+      context: docker/validator
+    image: validator:latest
+    container_name: secondary_validator
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.3
+    depends_on:
+      - "genesis_validator"
+    command: ["secondary"]
+
+  contract_builder:
+    build: 
+      context: docker/contract_builder
+    image: contract_builder:latest
+    container_name: contract_builder
+    volumes:
+      - ./data/contract_volume:/contract_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.100
+
+  contract_uploader:
+    build:
+      context: docker/contract_uploader
+    image: contract_uploader:latest
+    container_name: contract_uploader
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/contract_volume:/contract_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.101
+    depends_on:
+      - "genesis_validator"
+      - "secondary_validator"
+
+  binary_builder:
+    build: 
+      context: docker/binary_builder
+    image: binary_builder:latest
+    container_name: binary_builder
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.102
+    depends_on:
+      - "contract_uploader"
+
+  api:
+    build:
+      context: docker/api
+    container_name: api
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.99
+    depends_on:
+      - "genesis_validator"
+      - "secondary_validator"
+  
+  mix1:
+    build:
+      context: docker/mixnode
+    container_name: mix1
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - MIX_NAME=mix1
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.11
+    depends_on:
+      - "genesis_validator"
+      - "secondary_validator"
+      - "api"
+
+  mix2:
+    build:
+      context: docker/mixnode
+    container_name: mix2
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - MIX_NAME=mix2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.12
+    depends_on:
+      - "genesis_validator"
+      - "secondary_validator"
+      - "api"
+
+  mix3:
+    build:
+      context: docker/mixnode
+    container_name: mix3
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - MIX_NAME=mix3
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.13
+    depends_on:
+      - "genesis_validator"
+      - "secondary_validator"
+      - "api"
+
+  entry-gateway:
+    build:
+      context: docker/gateway
+    container_name: entry-gateway
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - GATEWAY_NAME=entry-gateway
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.21
+    depends_on:
+      - "api"
+
+  # exit-gateway:
+  #   build:
+  #     context: docker/gateway
+  #   container_name: exit-gateway
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - GATEWAY_NAME=exit-gateway
+  #   cap_add:
+  #     - NET_ADMIN
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.22
+  #   depends_on:
+  #     - "api"
+  
+  client1:
+    build:
+      context: docker/client
+    container_name: client1
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=client1
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.31
+    depends_on:
+      - "entry-gateway"
+      # - "exit-gateway"
+      
+  client2:
+    build:
+      context: docker/client
+    container_name: client2
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=client2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.32
+    depends_on:
+      - "entry-gateway"
+      # - "exit-gateway"
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
