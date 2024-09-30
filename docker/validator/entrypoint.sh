@@ -16,16 +16,16 @@ if [ "$1" = "genesis" ]; then
     (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add mix1 2>&1 | tail -n 1 > /nyx_volume/mix1_mnemonic
     (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add mix2 2>&1 | tail -n 1 > /nyx_volume/mix2_mnemonic
     (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add mix3 2>&1 | tail -n 1 > /nyx_volume/mix3_mnemonic
-    (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add entry-gateway 2>&1 | tail -n 1 > /nyx_volume/entry-gateway_mnemonic
-    (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add exit-gateway 2>&1 | tail -n 1 > /nyx_volume/exit-gateway_mnemonic
+    (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add gateway1 2>&1 | tail -n 1 > /nyx_volume/gateway1_mnemonic
+    (echo "$PASSWORD"; echo "$PASSWORD") | nyxd keys add gateway2 2>&1 | tail -n 1 > /nyx_volume/gateway2_mnemonic
     # add tokens to the accounts
     echo "$PASSWORD" | nyxd genesis add-genesis-account alice 1000000000000000unym,1000000000000000unyx
     echo "$PASSWORD" | nyxd genesis add-genesis-account bob 1000000000000000unym,1000000000000000unyx
     echo "$PASSWORD" | nyxd genesis add-genesis-account mix1 10000000000unym
     echo "$PASSWORD" | nyxd genesis add-genesis-account mix2 10000000000unym
     echo "$PASSWORD" | nyxd genesis add-genesis-account mix3 10000000000unym
-    echo "$PASSWORD" | nyxd genesis add-genesis-account entry-gateway 10000000000unym
-    echo "$PASSWORD" | nyxd genesis add-genesis-account exit-gateway 10000000000unym
+    echo "$PASSWORD" | nyxd genesis add-genesis-account gateway1 10000000000unym
+    echo "$PASSWORD" | nyxd genesis add-genesis-account gateway2 10000000000unym
     
     # make alice + bob a proper validator
     echo "$PASSWORD" | nyxd genesis gentx alice 1000000000unyx --chain-id nymtest-1

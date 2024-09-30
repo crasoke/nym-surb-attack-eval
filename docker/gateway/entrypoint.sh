@@ -11,9 +11,11 @@ done
 if [ ! -f "/root/nym-node" ]; then
   cp /bin_volume/nym-node /bin_volume/nym-cli /root
 
-  /root/nym-node run --mode $GATEWAY_NAME --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions --init-only
+  /root/nym-node run --mode entry-gateway --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions --init-only
+  # /root/nym-node run --mode $GATEWAY_NAME --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions --init-only
 
   IDENTITY_KEY=$(/root/nym-node bonding-information --id $GATEWAY_NAME | grep "Identity Key:" | sed 's/Identity Key: //')
+  echo $IDENTITY_KEY > /nyx_volume/${GATEWAY_NAME}_id
   SPHINX_KEY=$(/root/nym-node bonding-information --id $GATEWAY_NAME | grep "Sphinx Key:" | sed 's/Sphinx Key: //')
   VERSION=$(/root/nym-node bonding-information --id $GATEWAY_NAME | grep "Version:" | sed 's/Version: //')
   SIGN_PAYLOAD=$(/root/nym-cli mixnet operators gateway create-gateway-bonding-sign-payload --host $(hostname -i) --sphinx-key $SPHINX_KEY --identity-key $IDENTITY_KEY --version $VERSION --amount 1000000000 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --location "ger" --nyxd-url http://10.0.0.2:26657 --mixnet-contract-address "$(cat /nyx_volume/mixnet_contract_address)")
@@ -23,4 +25,18 @@ if [ ! -f "/root/nym-node" ]; then
   /root/nym-cli mixnet operators gateway bond --host $(hostname -i) --sphinx-key $SPHINX_KEY --identity-key $IDENTITY_KEY --version $VERSION --amount 1000000000 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --nyxd-url http://10.0.0.2:26657 --mixnet-contract-address "$(cat /nyx_volume/mixnet_contract_address)" --mix-port 1789 --signature $SIGNATURE --location "ger"
 fi
 
-/root/nym-node run --mode $GATEWAY_NAME --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions
+if [ $GATEWAY_NAME = "gateway1" ]; then
+  RUST_LOG=info /root/nym-node run --mode entry-gateway --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions &
+  while [ "$(curl -s http://10.0.0.99/v1/mixnodes/active)" = "[]" ]; do
+    echo "Waiting for Mixnodes to be selected..."
+    sleep 20
+  done
+  date +%s > /nyx_volume/time
+  tcpdump -G 3600 -W 1 -i eth0 -w /nyx_volume/${GATEWAY_NAME}.pcap
+else
+  /root/nym-node run --mode entry-gateway --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions
+fi
+
+# /root/nym-node run --mode entry-gateway --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions &
+# /root/nym-node run --mode $GATEWAY_NAME --id $GATEWAY_NAME --nym-api-urls http://10.0.0.99 --nyxd-urls http://10.0.0.2:26657 --mnemonic "$(cat /nyx_volume/${GATEWAY_NAME}_mnemonic)" --public-ips $(hostname -i) --accept-operator-terms-and-conditions
+

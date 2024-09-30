@@ -39,7 +39,7 @@ if [ ! -s "/nyx_volume/mixnet_contract_address" ]; then
 
   # this is a shorter versing with an active set size of 3, 3 min epoch duration and only 10 epochs in a interval
   (echo "$PASSWORD";sleep 3;yes) | nyxd tx wasm instantiate 1 \
-    "{\"rewarding_validator_address\": \"$ALICE_ADDRESS\",\"vesting_contract_address\": \"$ALICE_ADDRESS\",\"rewarding_denom\": \"unym\",\"epochs_in_interval\": 10,\"epoch_duration\": {\"secs\": 180,\"nanos\": 0},\"initial_rewarding_params\": {\"initial_reward_pool\": \"10000000000\",\"initial_staking_supply\": \"9000000000\",\"staking_supply_scale_factor\": \"1.0\",\"sybil_resistance\": \"0.3\",\"active_set_work_factor\": \"10\",\"interval_pool_emission\": \"0.02\",\"rewarded_set_size\": 3,\"active_set_size\": 3}}" \
+    "{\"rewarding_validator_address\": \"$ALICE_ADDRESS\",\"vesting_contract_address\": \"$ALICE_ADDRESS\",\"rewarding_denom\": \"unym\",\"epochs_in_interval\": 20,\"epoch_duration\": {\"secs\": 600,\"nanos\": 0},\"initial_rewarding_params\": {\"initial_reward_pool\": \"10000000000\",\"initial_staking_supply\": \"9000000000\",\"staking_supply_scale_factor\": \"1.0\",\"sybil_resistance\": \"0.3\",\"active_set_work_factor\": \"10\",\"interval_pool_emission\": \"0.02\",\"rewarded_set_size\": 3,\"active_set_size\": 3}}" \
     --admin="$ALICE_ADDRESS" \
     --from alice \
     --label "mixcontract" \

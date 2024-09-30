@@ -130,21 +130,36 @@ services:
       - "secondary_validator"
       - "api"
 
-  entry-gateway:
+  gateway1:
     build:
       context: docker/gateway
-    container_name: entry-gateway
+    container_name: gateway1
     volumes:
       - ./data/nyx_volume:/nyx_volume
       - ./data/bin_volume:/bin_volume
     environment:
-      - GATEWAY_NAME=entry-gateway
+      - GATEWAY_NAME=gateway1
     networks:
       localnet:
         ipv4_address: 10.0.0.21
     depends_on:
       - "api"
 
+  gateway2:
+    build:
+      context: docker/gateway
+    container_name: gateway2
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.22
+    depends_on:
+      - "api"
+  
   # exit-gateway:
   #   build:
   #     context: docker/gateway
@@ -158,41 +173,315 @@ services:
   #     - NET_ADMIN
   #   networks:
   #     localnet:
-  #       ipv4_address: 10.0.0.22
+  #       ipv4_address: 10.0.0.23
   #   depends_on:
   #     - "api"
   
-  client1:
+  victim:
     build:
-      context: docker/client
-    container_name: client1
+      context: docker/victim
+    container_name: victim
     volumes:
       - ./data/nyx_volume:/nyx_volume
       - ./data/bin_volume:/bin_volume
     environment:
-      - CLIENT_NAME=client1
+      - CLIENT_NAME=victim
+      - GATEWAY_NAME=gateway1
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.30
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+  
+  user11:
+    build:
+      context: docker/victim
+    container_name: user11
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=user11
+      - GATEWAY_NAME=gateway1
     networks:
       localnet:
         ipv4_address: 10.0.0.31
     depends_on:
-      - "entry-gateway"
-      # - "exit-gateway"
-      
-  client2:
+      - "gateway1"
+      - "gateway2"
+  
+  # user12:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user12
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user12
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.32
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  # user13:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user13
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user13
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.33
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+  
+  # user14:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user14
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user14
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.34
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+  
+  # user15:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user15
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user15
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.35
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  # user16:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user16
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user16
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.36
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  # user17:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user17
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user17
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.37
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  # user18:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user18
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user18
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.38
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  # user19:
+  #   build:
+  #     context: docker/victim
+  #   container_name: user19
+  #   volumes:
+  #     - ./data/nyx_volume:/nyx_volume
+  #     - ./data/bin_volume:/bin_volume
+  #   environment:
+  #     - CLIENT_NAME=user19
+  #     - GATEWAY_NAME=gateway1
+  #   networks:
+  #     localnet:
+  #       ipv4_address: 10.0.0.39
+  #   depends_on:
+  #     - "gateway1"
+  #     - "gateway2"
+
+  user21:
     build:
-      context: docker/client
-    container_name: client2
+      context: docker/victim
+    container_name: user21
     volumes:
       - ./data/nyx_volume:/nyx_volume
       - ./data/bin_volume:/bin_volume
     environment:
-      - CLIENT_NAME=client2
+      - CLIENT_NAME=user21
+      - GATEWAY_NAME=gateway2
     networks:
       localnet:
-        ipv4_address: 10.0.0.32
+        ipv4_address: 10.0.0.41
     depends_on:
-      - "entry-gateway"
-      # - "exit-gateway"
+      - "gateway1"
+      - "gateway2"
+  
+  user22:
+    build:
+      context: docker/victim
+    container_name: user22
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=user22
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.42
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+  
+  user23:
+    build:
+      context: docker/victim
+    container_name: user23
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=user23
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.43
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+      
+  attacker1:
+    build:
+      context: docker/attacker
+    container_name: attacker1
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=attacker1
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.51
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+  
+  attacker2:
+    build:
+      context: docker/attacker
+    container_name: attacker2
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=attacker2
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.52
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+  
+  attacker3:
+    build:
+      context: docker/attacker
+    container_name: attacker3
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=attacker3
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.53
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+
+  attacker4:
+    build:
+      context: docker/attacker
+    container_name: attacker4
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=attacker4
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.54
+    depends_on:
+      - "gateway1"
+      - "gateway2"
+
+  attacker5:
+    build:
+      context: docker/attacker
+    container_name: attacker5
+    volumes:
+      - ./data/nyx_volume:/nyx_volume
+      - ./data/bin_volume:/bin_volume
+    environment:
+      - CLIENT_NAME=attacker5
+      - GATEWAY_NAME=gateway2
+    networks:
+      localnet:
+        ipv4_address: 10.0.0.55
+    depends_on:
+      - "gateway1"
+      - "gateway2"
 
 networks:
   localnet:

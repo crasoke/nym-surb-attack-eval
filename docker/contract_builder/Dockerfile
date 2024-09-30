@@ -33,7 +33,7 @@ RUN apt-get update \
 WORKDIR /app
 RUN git clone https://github.com/nymtech/nym.git \
     && cd nym \
-    && git checkout master
+    && git checkout release/2024.8-wispa
 
 RUN apt-get -y install npm
 
